@@ -8,7 +8,7 @@ public class Test {
 
     @GetMapping("/test")
     public String test() {
-        return "new world!";
+        return "new world! + commit";
     }
 
 }
