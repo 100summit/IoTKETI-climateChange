@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keti.climate.keti_climatechange.mapper.UserMapper">
+    <select id="getUserById" parameterType="hashmap" resultType="hashmap">
+        SELECT id, password, auth, name, department, email, contact, reg_date, mod_date
+        FROM user
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectUser" parameterType="hashmap" resultType="hashmap">
+        SELECT id, name, department, email, contact, reg_date, mod_date
+        FROM user
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insertUser" parameterType="hashmap">
+        INSERT INTO user
+        (id, password, auth, name, department, email, contact, reg_date, mod_date)
+        VALUES(#{id}, #{password}, #{auth}, #{name}, #{department}, #{email}, #{contact}, now(), null)
+    </insert>
+
+    <update id="updateUser" parameterType="hashmap">
+        UPDATE user
+        SET
+        <if test="password != null and password != ''">
+            password=#{password},
+        </if>
+        <if test="name != null and name != ''">
+            name=#{name},
+        </if>
+        <if test="department != null and department != ''">
+            department=#{department},
+        </if>
+        <if test="email != null and email != ''">
+            email=#{email},
+        </if>
+        <if test="contact != null and contact != ''">
+            contact=#{contact},
+        </if>
+        mod_date=now()
+        WHERE id=#{id}
+    </update>
+</mapper>

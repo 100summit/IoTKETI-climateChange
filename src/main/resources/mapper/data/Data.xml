@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.keti.climate.keti_climatechange.mapper.DataMapper">
+
+    <select id="getSites" resultType="hashmap">
+        SELECT site_id, site_name, site_description, DATE_FORMAT(reg_date, '%Y.%m.%d %T') AS reg_date , site_image
+        FROM sites
+    </select>
+
+    <select id="getSite" parameterType="string" resultType="hashmap">
+        SELECT site_id, site_name, site_description, DATE_FORMAT(reg_date, '%Y.%m.%d %T') AS reg_date , site_image
+        FROM sites
+        WHERE site_id = #{site_id}
+    </select>
+
+    <update id="updateSite" parameterType="hashmap">
+        UPDATE sites SET site_name = #{site},
+                         site_description = #{description},
+                         mod_date = now(),
+                         site_image = #{siteImg}
+        WHERE site_id = #{siteId}
+    </update>
+
+    <insert id="insertAgvRunStatus" parameterType="hashmap">
+        INSERT INTO agv_run_status
+        (ri,status, uptTime)
+        VALUES(#{ri}, #{status},now() )
+    </insert>
+
+    <select id="agvRunStatusExist" parameterType="hashmap" resultType="int">
+        select count(1) from agv_run_status
+        where ri = #{ri}
+    </select>
+
+    <select id="agvGetStatus" parameterType="hashmap" resultType="String">
+        select status from agv_run_status
+        where ri = #{ri}
+    </select>
+
+    <insert id="insertSite" parameterType="hashmap">
+        INSERT INTO sites
+        (site_id, site_name, site_description, reg_date, mod_date , site_image)
+        VALUES(date_format(now(3), '%Y%m%d%H%I%S%f'), #{site}, #{description}, now(), null , #{siteImg})
+    </insert>
+
+
+
+    <delete id="deleteSite" parameterType="string">
+        DELETE FROM sites WHERE site_id = #{siteId}
+    </delete>
+
+
+    <select id="getAgvs" parameterType="string" resultType="hashmap">
+        SELECT agv.agv_id, agv.agv_name, agv.agv_resource,
+               site.site_id, site.site_name, site.site_description,
+               DATE_FORMAT(agv.reg_date, '%Y.%m.%d %T') AS reg_date ,
+              site.site_image
+
+        FROM agvs agv, sites site
+        WHERE agv.site_id = site.site_id
+        <if test="siteId != '' and siteId != null">AND agv.site_id = #{siteId}</if>
+    </select>
+
+
+    <select id="getAgv" parameterType="string" resultType="hashmap">
+        SELECT agv.agv_id, agv.agv_name, agv.agv_resource, site.site_id, site.site_name, site.site_description, DATE_FORMAT(agv.reg_date, '%Y.%m.%d %T') AS reg_date , site_image
+        FROM agvs agv, sites site
+        WHERE agv.site_id = site.site_id
+          AND agv.agv_id = #{agvId};
+    </select>
+
+
+    <update id="updateAgv" parameterType="hashmap">
+        UPDATE agvs SET agv_name = #{agvName},
+                        agv_resource = #{agvResource},
+                        site_id = #{siteId},
+                        mod_date = now()
+        WHERE agv_id = #{agvId}
+    </update>
+
+    <insert id="insertAgv" parameterType="hashmap">
+        INSERT INTO agvs
+            (agv_id, agv_name, agv_resource, site_id, reg_date, mod_date)
+        VALUES(date_format(now(3), '%Y%m%d%H%I%S%f'), #{agvName}, #{agvResource}, #{siteId}, now(), null)
+    </insert>
+
+    <delete id="deleteAgv" parameterType="string">
+        DELETE FROM agvs WHERE agv_id = #{agvId}
+    </delete>
+
+</mapper>
